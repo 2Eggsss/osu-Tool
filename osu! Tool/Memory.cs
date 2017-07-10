@@ -25,7 +25,7 @@ namespace osu__Tool
             this.process = process;
         }
 
-        public int FindSignature(byte[] signature, int regionSize, int scanSize)
+        public int FindSignature(byte[] signature, int regionSize, int scanSize, string Mask)
         {
             int startAddress = (int)process.MainModule.BaseAddress;
             int endAddress = startAddress + scanSize;
@@ -38,7 +38,7 @@ namespace osu__Tool
             while (currentAddress < endAddress)
             {
                 buffer = ReadBytes(currentAddress, region + signature.Length);
-                int index = FindPattern(buffer, signature);
+                int index = FindPattern(buffer, signature, Mask);
 
                 if (index != -1)
                     return currentAddress + index;
@@ -68,7 +68,7 @@ namespace osu__Tool
             return BitConverter.ToBoolean(buffer, 0);
         }
 
-        private int FindPattern(byte[] source, byte[] pattern)
+        private int FindPattern(byte[] source, byte[] pattern, string Mask)
         {
             bool found = false;
 
@@ -78,11 +78,25 @@ namespace osu__Tool
 
                 for (int j = 0; j < pattern.Length; j++)
                 {
-                    if (source[i + j] != pattern[j])
+                    if (Mask[j] == 'x')
                     {
-                        found = false;
+                        if (source[i + j] != pattern[j])
+                        {
+                            found = false;
+                            break;
+                        }
+                        if (j == pattern.Length - 1)
+                        {
+                            found = true;
+                            break;
+                        }
+                    }
+                    else if (Mask[j] == '?' && j == pattern.Length - 1)
+                    {
+                        found = true;
                         break;
                     }
+                    
                 }
 
                 if (found)
