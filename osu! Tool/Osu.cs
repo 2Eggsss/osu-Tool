@@ -98,9 +98,9 @@ namespace osu__Tool
 
         private void GetAddresses()
         {
-            int addressPtr = memory.FindSignature(new byte[] { 0xDB, 0x5D, 0xE8, 0x8B, 0x45, 0xE8, 0xA3 }, 0x1000, 0x10000000);
+            int addressPtr = memory.FindSignature(new byte[] { 0xA3, 0x00, 0x00, 0x00, 0x00, 0x8B, 0x35 }, 0x1000, 0x10000000, "x????xx");
 
-            audioTimeAddress = memory.ReadInt32(addressPtr + 0x7);
+            audioTimeAddress = memory.ReadInt32(addressPtr + 0x1);
             audioPlayingAddress = audioTimeAddress + 0x24;
         }
 
